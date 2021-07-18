@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "814409361966",
+    "project_id": "nineteenfive-ecommerce-app",
+    "storage_bucket": "nineteenfive-ecommerce-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814409361966:android:845baec06b9db3e45d4dbf",
+        "android_client_info": {
+          "package_name": "com.example.nineteenfive_ecommerce_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "814409361966-j2qn7tuo31k6bm9i4fv7va07r804gq34.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJ_Bp-XTw5Vc5LgKb0gTYUU7VXyZmlmNU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "814409361966-j2qn7tuo31k6bm9i4fv7va07r804gq34.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
