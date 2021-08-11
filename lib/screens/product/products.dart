@@ -44,7 +44,7 @@ class _ProductsState extends State<Products> {
     if (minPriceInAllProducts != null) {
       return minPriceInAllProducts;
     }
-    minPriceInAllProducts = getMaxPrice() ?? 999999999999999999;
+    minPriceInAllProducts = getMaxPrice() ?? 99999999999999;
     widget.products.forEach((element) {
       if (element.productPrice < minPriceInAllProducts!) {
         minPriceInAllProducts = element.productPrice;

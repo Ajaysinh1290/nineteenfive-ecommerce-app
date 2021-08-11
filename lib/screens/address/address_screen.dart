@@ -7,23 +7,15 @@ import 'package:nineteenfive_ecommerce_app/screens/payment/bank_details_screen.d
 import 'package:nineteenfive_ecommerce_app/screens/payment/payment_successfull.dart';
 import 'package:nineteenfive_ecommerce_app/utils/data/static_data.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/button/long_blue_button.dart';
+import 'package:nineteenfive_ecommerce_app/widgets/dialog/my_dialog.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/route/CustomPageRoute.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/text%20field/basic_text_field.dart';
 
 class AddressScreen extends StatefulWidget {
-  // List<Order> orders;
   Address? address;
 
-  // bool isFromCart;
-  // Order order;
-  // ProductReturn productReturn;
-  //
-  // AddressScreen(this.orders, this.isFromCart);
-  //
   AddressScreen.editAddress(this.address);
 
-  //
-  // AddressScreen.returnOrder(this.order, this.productReturn);
 
   AddressScreen.addAddress();
 
@@ -53,6 +45,7 @@ class _AddressScreenState extends State<AddressScreen> {
 
   Future<void> validate() async {
     if (formKey.currentState!.validate()) {
+      MyDialog.showLoading(context);
       Address address = Address(
           addressId: DateTime.now().millisecondsSinceEpoch.toString(),
           name: nameController.text,
@@ -75,35 +68,12 @@ class _AddressScreenState extends State<AddressScreen> {
         widget.address!.state = address.state;
         widget.address!.city = address.city;
         widget.address!.pinCode = address.pinCode;
-        // } else if (widget.orders != null) {
-        //   widget.orders.forEach((element) {
-        //     element.addressId = address.addressId;
-        //   });
-        //   StaticData.userData.addresses.add(address);
-        // } else if (widget.order != null && widget.productReturn != null) {
-        //   widget.productReturn.pickUpAddressId = address.addressId;
-        //   StaticData.userData.addresses.add(address);
       } else {
         StaticData.userData.addresses!.add(address);
       }
       await FirebaseDatabase.storeUserData(StaticData.userData);
-      // if (widget.orders != null) {
-      //   Navigator.push(
-      //       context,
-      //       CustomPageRoute(
-      //           widget: PaymentSuccessful(widget.orders, widget.isFromCart),
-      //           alignment: Alignment.center,
-      //           curve: Curves.elasticOut,
-      //           duration: Duration(seconds: 1)));
-      // } else if (widget.order != null && widget.productReturn != null) {
-      //   Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //           builder: (context) => BankDetailsScreen.returnOrder(
-      //               widget.order, widget.productReturn)));
-      // } else {
       Navigator.pop(context);
-      // }
+      Navigator.pop(context);
     }
   }
 

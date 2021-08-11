@@ -16,7 +16,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   String? emailValidator(value) {
     if (value.isEmpty)
       return "Required *";
-    else if (value.toString().contains("@") || value.toString().contains("."))
+    else if (!value.toString().contains("@") || !value.toString().contains("."))
       return "Enter a Valid Email Address !";
     else
       return null;

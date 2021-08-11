@@ -187,6 +187,7 @@ class _RazorPayPaymentScreenState extends State<RazorPayPaymentScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: widget.orders.length,
                 itemBuilder: (context, index) {

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nineteenfive_ecommerce_app/utils/color_palette.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/button/long_blue_button.dart';
 
+import 'chat/chat_screen.dart';
 import 'email_us.dart';
 
 class HelpAndSupport extends StatefulWidget {
@@ -75,7 +76,10 @@ class _HelpAndSupportState extends State<HelpAndSupport> {
                 Column(
                   children: [
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => ChatScreen()));
+                      },
                       child: Container(
                         width: double.infinity,
                         height: ScreenUtil().setHeight(80),

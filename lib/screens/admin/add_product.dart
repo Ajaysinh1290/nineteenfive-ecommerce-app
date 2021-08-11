@@ -174,6 +174,8 @@ class _AddProductState extends State<AddProduct> {
     print(productId);
     Product product = Product(
         productId: productId,
+        isActive : true,
+        isFeatured : true,
         productName: productNameController.text.trim(),
         productMrp: productMrpController.text.isNotEmpty
             ? int.parse(productMrpController.text)

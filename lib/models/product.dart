@@ -1,3 +1,5 @@
+import 'package:nineteenfive_ecommerce_app/models/product_rating.dart';
+
 class Product {
   late String productId;
   late String productName;
@@ -8,23 +10,27 @@ class Product {
   late int availableStock;
   List<dynamic>? productSizes = [];
   late List<dynamic> productImages = [];
-  List<Map<String, dynamic>>? productRatings = [];
+  List<ProductRating>? productRatings = [];
   late String productDescription;
+  late bool isActive;
+  late bool isFeatured;
   String? returnTime;
 
   Product(
       {required this.productId,
-      required this.productName,
-      required this.productCreatedOn,
-      required this.productCategory,
-      required this.productPrice,
-      this.productMrp,
-      this.productSizes,
-      required this.availableStock,
-      required this.productImages,
-      this.productRatings,
-      required this.productDescription,
-      this.returnTime});
+        required this.productName,
+        required this.productCreatedOn,
+        required this.productCategory,
+        required this.productPrice,
+        this.productMrp,
+        this.productSizes,
+        required this.availableStock,
+        required this.productImages,
+        this.productRatings,
+        required this.productDescription,
+        this.returnTime,
+        required this.isActive,
+        required this.isFeatured});
 
   Product.fromJson(Map<String, dynamic>? data) {
     this.productId = data!['product_id'];
@@ -37,11 +43,21 @@ class Product {
     this.productDescription = data['product_description'];
     this.productSizes = data['product_sizes'];
     this.productImages = data['product_images'];
-    this.productRatings = data['product_ratings'];
+    this.isActive = data['is_active']??true;
+    this.isFeatured = data['is_featured']??true;
+    List<dynamic> productRatingsList = data['product_ratings'] ?? [];
+    productRatingsList.forEach((rating) {
+      productRatings!.add(ProductRating.fromJson(rating));
+    });
+
     this.returnTime = data['return_time'];
   }
 
   Map<String, dynamic> toJson() {
+    List<dynamic> productRatingsList = [];
+    productRatings!.forEach((rating) {
+      productRatingsList.add(rating.toJson());
+    });
     return {
       'product_id': this.productId,
       'product_name': this.productName,
@@ -51,10 +67,12 @@ class Product {
       'product_mrp': this.productMrp,
       'product_description': this.productDescription,
       'product_sizes': this.productSizes,
-      'product_ratings': this.productRatings,
+      'product_ratings': productRatingsList,
       'product_images': this.productImages,
       'available_stock': this.availableStock,
-      'return_time': this.returnTime
+      'return_time': this.returnTime,
+      'is_active': this.isActive,
+      'is_featured': this.isFeatured
     };
   }
 }

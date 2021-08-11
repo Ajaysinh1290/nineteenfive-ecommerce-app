@@ -80,12 +80,15 @@ class _AddressCardState extends State<AddressCard> {
                 onTap: () {
                   widget.onDeleted?.call();
                 },
-                child: Icon(
-                  Icons.clear,
-                  color: widget.isSelected
-                      ? ColorPalette.black
-                      : ColorPalette.darkGrey,
-                  size: 22.sp,
+                child: Container(
+                  padding: EdgeInsets.all(5.0),
+                  child: Icon(
+                    Icons.clear,
+                    color: widget.isSelected
+                        ? ColorPalette.black
+                        : ColorPalette.darkGrey,
+                    size: 22.sp,
+                  ),
                 ),
               )
             ],

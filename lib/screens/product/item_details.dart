@@ -48,7 +48,7 @@ class _ItemDetailsState extends State<ItemDetails> {
       return 5;
     } else {
       widget.product.productRatings!.forEach((ratingMapData) {
-        rating += ratingMapData['rating'];
+        rating += ratingMapData.rating;
       });
     }
     return rating / widget.product.productRatings!.length;
@@ -238,32 +238,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                             )),
                       ),
                     ),
-                    Positioned(
-                      bottom: 60,
-                      right: 40,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          AddProduct.editProduct(
-                                              widget.product)))
-                              .then((value) => setState(() {}));
-                        },
-                        child: Container(
-                            width: ScreenUtil().setWidth(40),
-                            height: ScreenUtil().setWidth(40),
-                            decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.5),
-                                shape: BoxShape.circle),
-                            child: Icon(
-                              Icons.edit_outlined,
-                              size: 24.sp,
-                              color: Colors.black,
-                            )),
-                      ),
-                    ),
+
                   ],
                 ),
               ),
