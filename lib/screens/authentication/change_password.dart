@@ -18,7 +18,7 @@ class _ChangePasswordState extends State<ChangePassword> {
 
 
 
-  Future<void> validator(BuildContext context) async {
+  Future<void> validate(BuildContext context) async {
     if (formKey.currentState!.validate()) {
       bool result = await MyFirebaseAuth(context)
           .updatePassword(oldPasswordController.text, newPasswordController.text);
@@ -117,7 +117,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                   ),
                   LongBlueButton(
                     text: 'Update Password',
-                    onPressed: () => validator(context),
+                    onPressed: () => validate(context),
                   ),
                   SizedBox(
                     height: ScreenUtil().setHeight(20),
