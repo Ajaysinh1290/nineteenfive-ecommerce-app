@@ -2,34 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:nineteenfive_ecommerce_app/utils/color_palette.dart';
 
 class MyDialog {
-  // static showLoading(BuildContext context) {
-  //   showDialog(
-  //       context: context,
-  //       barrierColor: ColorPalette.black.withOpacity(0.2),
-  //       barrierDismissible: false,
-  //       builder: (context) {
-  //         return SimpleDialog(
-  //           backgroundColor: Colors.transparent,
-  //           elevation: 0,
-  //           insetPadding: EdgeInsets.zero,
-  //           children: [
-  //             Padding(
-  //               padding: const EdgeInsets.all(20.0),
-  //               child: Center(
-  //                 child: SpinKitDoubleBounce(
-  //                   color: ColorPalette.darkBlue,
-  //                   size: 70,
-  //                 ),
-  //               ),
-  //             )
-  //           ],
-  //         );
-  //       });
-  // }
+
   static showLoading(BuildContext context) async {
     double angle = 0;
     double length = 130;

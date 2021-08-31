@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/authentication/my_firebase_auth.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/database/firebase_database.dart';
 import 'package:nineteenfive_ecommerce_app/models/order.dart';
+import 'package:nineteenfive_ecommerce_app/models/product.dart';
 import 'package:nineteenfive_ecommerce_app/utils/data/static_data.dart';
 import 'package:nineteenfive_ecommerce_app/screens/home/main_screen.dart';
 import 'package:nineteenfive_ecommerce_app/screens/address/your_addresses.dart';
@@ -11,6 +13,8 @@ import 'package:nineteenfive_ecommerce_app/utils/color_palette.dart';
 import 'package:nineteenfive_ecommerce_app/utils/constants.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/button/long_blue_button.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/cards/item_checkout_card.dart';
+import 'package:nineteenfive_ecommerce_app/widgets/dialog/my_dialog.dart';
+import 'package:nineteenfive_ecommerce_app/widgets/text%20field/basic_text_field.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen();
@@ -20,8 +24,9 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  int shippingPrice = 40;
   List<dynamic> products = [];
+  late List<int?> promoCodeDiscount;
+  late List<dynamic> promoCodeUsed;
 
   int getTotal() {
     num total = 0;
@@ -34,28 +39,58 @@ class _CartScreenState extends State<CartScreen> {
 
   Order getOrder(int index) {
     return Order(
-      userId: MyFirebaseAuth.firebaseAuth.currentUser!.uid,
-      orderId: (DateTime.now().millisecondsSinceEpoch+index).toString(),
-      numberOfItems: StaticData.userData.cart![index].numberOfItems,
-      productId: products[index].productId,
-      productSize: StaticData.userData.cart![index].productSize,
-      totalAmount: getTotal(),
-    );
+        userId: MyFirebaseAuth.firebaseAuth.currentUser!.uid,
+        orderId: (DateTime.now().millisecondsSinceEpoch + index).toString(),
+        numberOfItems: StaticData.userData.cart![index].numberOfItems,
+        productId: products[index].productId,
+        productSize: StaticData.userData.cart![index].productSize,
+        totalAmount: products[index].productPrice *
+            StaticData.userData.cart![index].numberOfItems,
+        promoCodeDiscount: promoCodeDiscount[index],
+        promoCode: promoCodeUsed[index],
+        shippingCharge:
+            products[index].shippingCharge ?? StaticData.shippingCharge,
+        returnTime: products[index].returnTime);
+  }
+
+  num getShippingCharge() {
+    num shippingCharge = 0;
+    products.forEach((element) {
+      shippingCharge += element.shippingCharge ?? StaticData.shippingCharge;
+    });
+    return shippingCharge;
+  }
+
+  int? getPromoCodeTotals() {
+    int? discount;
+    promoCodeDiscount.forEach((element) {
+      if (element != null) {
+        if (discount == null) discount = 0;
+        discount = discount! + element;
+      }
+    });
+    return discount;
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(StaticData.products);
-    print(StaticData.userData.cart);
+
+    promoCodeUsed = [];
+    promoCodeDiscount = [];
     StaticData.userData.cart!.forEach((cart) {
       StaticData.products.forEach((product) {
         if (cart.productId == product.productId) {
           products.add(product);
+          promoCodeUsed.add(null);
+          promoCodeDiscount.add(null);
         }
       });
     });
+    if (StaticData.userData.promoCodesUsed != null) {
+      promoCodeUsed += StaticData.userData.promoCodesUsed!;
+    }
   }
 
   Future<void> onItemDeleted(int index) async {
@@ -81,6 +116,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("Rebuilding UI IN Cart");
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -152,6 +188,38 @@ class _CartScreenState extends State<CartScreen> {
                                   child: ItemCheckoutCard(
                                     enableAnimation: false,
                                     product: products[index],
+                                    promoCodeName: promoCodeUsed[index],
+                                    promoCodesUsed: promoCodeUsed,
+                                    promoCodeDiscount:
+                                        (promoCodeName, discount) {
+                                      if (discount != null) {
+                                        if (promoCodeDiscount[index] == null) {
+                                          promoCodeDiscount[index] = 0;
+                                        }
+                                        promoCodeUsed[index] = promoCodeName;
+                                        promoCodeDiscount[index] =
+                                            promoCodeDiscount[index]! +
+                                                discount;
+                                      } else if (promoCodeDiscount[index] !=
+                                              null &&
+                                          promoCodeUsed[index] != null) {
+                                        StaticData.promoCodes
+                                            .forEach((promoCode) {
+                                          if (promoCode.promoCode ==
+                                              promoCodeUsed[index]) {
+                                            promoCodeDiscount[index] =
+                                                promoCodeDiscount[index]! -
+                                                    promoCode.discount;
+                                          }
+                                        });
+
+                                        if (promoCodeDiscount[index] == 0) {
+                                          promoCodeDiscount[index] = null;
+                                        }
+                                        promoCodeUsed[index] = promoCodeName;
+                                      }
+                                      setState(() {});
+                                    },
                                     onDeleted: () => onItemDeleted(index),
                                     onSizeChanged: (size) =>
                                         onSizeChanged(size, index),
@@ -165,59 +233,6 @@ class _CartScreenState extends State<CartScreen> {
                                   ),
                                 );
                               },
-                            ),
-                            SizedBox(
-                              height: ScreenUtil().setHeight(15),
-                            ),
-                            Container(
-                              width: double.infinity,
-                              height: ScreenUtil().setHeight(80),
-                              padding: EdgeInsets.only(
-                                  left: ScreenUtil().setWidth(20),
-                                  top: 5,
-                                  bottom: 5,
-                                  right: ScreenUtil().setWidth(20)),
-                              decoration: BoxDecoration(
-                                  color: ColorPalette.lightGrey,
-                                  borderRadius: BorderRadius.circular(
-                                      ScreenUtil().radius(15))),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      autovalidateMode:
-                                          AutovalidateMode.disabled,
-                                      cursorColor:
-                                          Theme.of(context).cursorColor,
-                                      decoration: InputDecoration(
-                                          border: InputBorder.none,
-                                          hintText: 'Promocode',
-                                          hintStyle: Theme.of(context)
-                                              .textTheme
-                                              .headline6),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline6!
-                                          .copyWith(color: ColorPalette.black),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  LongBlueButton(
-                                    width: 86,
-                                    height: 60,
-                                    text: 'Apply',
-                                    textStyle: Theme.of(context)
-                                        .textTheme
-                                        .headline3!
-                                        .copyWith(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold),
-                                    borderRadius: 10, onPressed: () {  },
-                                  )
-                                ],
-                              ),
                             ),
                             SizedBox(
                               height: 30,
@@ -259,7 +274,7 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                                 Text(
                                   Constants.currencySymbol +
-                                      shippingPrice.toString(),
+                                      getShippingCharge().toString(),
                                   style: GoogleFonts.openSans(
                                       fontSize: 24.sp,
                                       fontWeight: FontWeight.w600,
@@ -287,7 +302,8 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                                 Text(
                                   Constants.currencySymbol +
-                                      (shippingPrice + getTotal()).toString(),
+                                      (getShippingCharge() + getTotal())
+                                          .toString(),
                                   style: GoogleFonts.openSans(
                                       fontSize: 24.sp,
                                       fontWeight: FontWeight.w600,
@@ -295,8 +311,89 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ],
                             ),
+                            if (getPromoCodeTotals() != null)
+                              Column(
+                                children: [
+                                  SizedBox(
+                                    height: ScreenUtil().setHeight(20),
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    height: 1.5,
+                                    color: ColorPalette.lightGrey,
+                                  ),
+                                  SizedBox(
+                                    height: ScreenUtil().setHeight(20),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Promo code discount',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          "- " +
+                                              Constants.currencySymbol +
+                                              getPromoCodeTotals().toString(),
+                                          style: GoogleFonts.openSans(
+                                              fontSize: 24.sp,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 1.0),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: ScreenUtil().setHeight(20),
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    height: 1.5,
+                                    color: ColorPalette.lightGrey,
+                                  ),
+                                  SizedBox(
+                                    height: ScreenUtil().setHeight(20),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Grand Total',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          Constants.currencySymbol +
+                                              (getTotal() +
+                                                      getShippingCharge() -
+                                                      getPromoCodeTotals()!)
+                                                  .toString(),
+                                          style: GoogleFonts.openSans(
+                                              fontSize: 24.sp,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 1.0),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             SizedBox(
-                              height: ScreenUtil().setHeight(100),
+                              height: ScreenUtil().setHeight(120),
                             )
                           ],
                         ),
@@ -322,7 +419,10 @@ class _CartScreenState extends State<CartScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => YourAddresses(orders: orders,isFromCart: true,)));
+                        builder: (context) => YourAddresses(
+                              orders: orders,
+                              isFromCart: true,
+                            )));
               }
             },
             text: StaticData.userData.cart!.length == 0

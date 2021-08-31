@@ -31,7 +31,7 @@ class _RazorPayPaymentScreenState extends State<RazorPayPaymentScreen> {
 
   late Address address;
 
-  int shippingPrice = 40;
+  // int shippingPrice = 40;
 
   @override
   void initState() {
@@ -43,17 +43,34 @@ class _RazorPayPaymentScreenState extends State<RazorPayPaymentScreen> {
     razorPay.on(Razorpay.EVENT_PAYMENT_ERROR, handlerErrorFailure);
     razorPay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlerExternalWallet);
     address = widget.orders.first.address!;
-    // fetchAddress();
   }
 
-  // void fetchAddress() {
-  //   StaticData.userData.addresses!.forEach((address) {
-  //     if (address.addressId == widget.orders.first.addressId!) {
-  //       this.address = address;
-  //       return;
-  //     }
-  //   });
-  // }
+
+
+  int? getPromoCodeTotals() {
+    int? promoCodeTotals;
+    widget.orders.forEach((order) {
+      if (order.promoCodeDiscount != null) {
+        if(promoCodeTotals==null) promoCodeTotals = 0;
+        promoCodeTotals = promoCodeTotals! + order.promoCodeDiscount!;
+      }
+    });
+    return promoCodeTotals;
+  }
+
+  int getShippingCharges() {
+    int shippingCharge = 0;
+    widget.orders.forEach((order) {
+      if (order.shippingCharge != null) {
+        shippingCharge += order.shippingCharge!;
+      }
+    });
+    return shippingCharge;
+  }
+
+  int getGrandTotal() {
+    return getTotal() - (getPromoCodeTotals() ?? 0) + getShippingCharges();
+  }
 
   int getTotal() {
     int total = 0;
@@ -86,8 +103,16 @@ class _RazorPayPaymentScreenState extends State<RazorPayPaymentScreen> {
     widget.orders.forEach((order) async {
       order.orderTime = DateTime.now();
       order.transactionId = paymentId;
+      if(order.promoCode!=null) {
+        if(StaticData.userData.promoCodesUsed==null) {
+          StaticData.userData.promoCodesUsed = [];
+        }
+        StaticData.userData.promoCodesUsed!.add(order.promoCode);
+      }
+
       await FirebaseDatabase.storeOrder(order, true);
     });
+
     if (widget.isFromCart != null && widget.isFromCart!) {
       StaticData.userData.cart!.clear();
       await FirebaseDatabase.storeUserData(StaticData.userData);
@@ -97,7 +122,10 @@ class _RazorPayPaymentScreenState extends State<RazorPayPaymentScreen> {
   void openCheckout() {
     var options = {
       "key": RAZOR_PAY_API_KEY,
-      "amount": (getTotal()+shippingPrice )* 100,
+      "amount": (getPromoCodeTotals() != null
+              ? getGrandTotal()
+              : (getTotal() + getShippingCharges())) *
+          100,
       "name": "Nineteenfive",
       "description": getProductName(),
       "prefill": {
@@ -139,12 +167,22 @@ class _RazorPayPaymentScreenState extends State<RazorPayPaymentScreen> {
     print('Error');
 
     String errorMessage = '';
-    switch(response.code) {
-      case Razorpay.NETWORK_ERROR : errorMessage = "Network Error..!"; break;
-      case Razorpay.INVALID_OPTIONS : errorMessage = "Something went wrong...!"; break;
-      case Razorpay.PAYMENT_CANCELLED : errorMessage = "Payment Cancelled..!"; break;
-      case Razorpay.TLS_ERROR : errorMessage = "Device does not support TLS v1.1 or TLS v1.2"; break;
-      default : errorMessage = "Unknown Error"; break;
+    switch (response.code) {
+      case Razorpay.NETWORK_ERROR:
+        errorMessage = "Network Error..!";
+        break;
+      case Razorpay.INVALID_OPTIONS:
+        errorMessage = "Something went wrong...!";
+        break;
+      case Razorpay.PAYMENT_CANCELLED:
+        errorMessage = "Payment Cancelled..!";
+        break;
+      case Razorpay.TLS_ERROR:
+        errorMessage = "Device does not support TLS v1.1 or TLS v1.2";
+        break;
+      default:
+        errorMessage = "Unknown Error";
+        break;
     }
     MyDialog.showMyDialog(context, errorMessage);
   }
@@ -212,12 +250,17 @@ class _RazorPayPaymentScreenState extends State<RazorPayPaymentScreen> {
                     'Subtotal',
                     style: Theme.of(context).textTheme.bodyText2,
                   ),
-                  Text(
-                    Constants.currencySymbol + getTotal().toString(),
-                    style: GoogleFonts.openSans(
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.0),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Flexible(
+                    child: Text(
+                      Constants.currencySymbol + getTotal().toString(),
+                      style: GoogleFonts.openSans(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.0),
+                    ),
                   ),
                 ],
               ),
@@ -239,12 +282,17 @@ class _RazorPayPaymentScreenState extends State<RazorPayPaymentScreen> {
                     'Shipping',
                     style: Theme.of(context).textTheme.bodyText2,
                   ),
-                  Text(
-                    Constants.currencySymbol + shippingPrice.toString(),
-                    style: GoogleFonts.openSans(
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.0),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Flexible(
+                    child: Text(
+                      Constants.currencySymbol + getShippingCharges().toString(),
+                      style: GoogleFonts.openSans(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.0),
+                    ),
                   ),
                 ],
               ),
@@ -266,16 +314,93 @@ class _RazorPayPaymentScreenState extends State<RazorPayPaymentScreen> {
                     'Total',
                     style: Theme.of(context).textTheme.bodyText2,
                   ),
-                  Text(
-                    Constants.currencySymbol +
-                        (shippingPrice + getTotal()).toString(),
-                    style: GoogleFonts.openSans(
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.0),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Flexible(
+                    child: Text(
+                      Constants.currencySymbol +
+                          (getShippingCharges() + getTotal()).toString(),
+                      style: GoogleFonts.openSans(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.0),
+                    ),
                   ),
                 ],
               ),
+              if (getPromoCodeTotals() != null)
+                Column(
+                  children: [
+                    SizedBox(
+                      height: ScreenUtil().setHeight(20),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      height: 1.5,
+                      color: ColorPalette.lightGrey,
+                    ),
+                    SizedBox(
+                      height: ScreenUtil().setHeight(20),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Promo code discount',
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Flexible(
+                          child: Text(
+                            "- " +
+                                Constants.currencySymbol +
+                                getPromoCodeTotals().toString(),
+                            style: GoogleFonts.openSans(
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.0),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: ScreenUtil().setHeight(20),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      height: 1.5,
+                      color: ColorPalette.lightGrey,
+                    ),
+                    SizedBox(
+                      height: ScreenUtil().setHeight(20),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Grand Total',
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Flexible(
+                          child: Text(
+                            Constants.currencySymbol +
+                                getGrandTotal().toString(),
+                            style: GoogleFonts.openSans(
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               SizedBox(
                 height: 30,
               ),

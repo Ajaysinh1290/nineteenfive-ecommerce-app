@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/authentication/my_firebase_auth.dart';
 import 'package:nineteenfive_ecommerce_app/models/category.dart';
-import 'package:nineteenfive_ecommerce_app/models/poster.dart';
 import 'package:nineteenfive_ecommerce_app/models/product.dart';
+import 'package:nineteenfive_ecommerce_app/models/promo_code.dart';
 import 'package:nineteenfive_ecommerce_app/models/user_data.dart';
 import 'package:nineteenfive_ecommerce_app/screens/home/main_screen.dart';
 import 'package:nineteenfive_ecommerce_app/utils/color_palette.dart';
@@ -25,9 +25,7 @@ class _LoadDataState extends State<LoadData> {
   bool pushed = false;
 
   pushNextScreen() async {
-
-
-    if(!pushed) {
+    if (!pushed) {
       pushed = true;
       timer.cancel();
       await Future.delayed(Duration(milliseconds: 0));
@@ -35,7 +33,6 @@ class _LoadDataState extends State<LoadData> {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => MainScreen()));
     }
-
   }
 
   Widget showLoading(AsyncSnapshot snapshot) {
@@ -114,16 +111,21 @@ class _LoadDataState extends State<LoadData> {
     );
   }
 
+  subscribeToUserId() async {
+    print('subscribing to topic ${StaticData.userData.userId}');
+    await FirebaseMessaging.instance
+        .subscribeToTopic(StaticData.userData.userId);
+  }
+
   @override
   void initState() {
     super.initState();
     timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
-      if(this.mounted) {
+      if (this.mounted) {
         setState(() {
           angle += 1;
         });
       }
-
     });
   }
 
@@ -146,12 +148,15 @@ class _LoadDataState extends State<LoadData> {
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             StaticData.userData = UserData.fromJson(snapshot.data.data());
+            subscribeToUserId();
           }
           return !snapshot.hasData
               ? showLoading(snapshot)
               : FutureBuilder(
-                  future:
-                      FirebaseFirestore.instance.collection('products').get(),
+                  future: FirebaseFirestore.instance
+                      .collection('products')
+                      .where("is_active", isEqualTo: true)
+                      .get(),
                   builder: (context, AsyncSnapshot snapshot) {
                     if (snapshot.hasData) {
                       List data = snapshot.data.docs;
@@ -180,21 +185,64 @@ class _LoadDataState extends State<LoadData> {
                                   ? showLoading(snapshot)
                                   : FutureBuilder(
                                       future: FirebaseFirestore.instance
-                                          .collection('posters')
+                                          .collection('promocodes')
+                                          .where('active_on',
+                                              isLessThanOrEqualTo: DateTime(
+                                                  DateTime.now().year,
+                                                  DateTime.now().month,
+                                                  DateTime.now().day))
                                           .get(),
-                                      builder:
-                                          (context, AsyncSnapshot snapshot) {
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<dynamic> snapshot) {
                                         if (snapshot.hasData) {
-                                          StaticData.posters = [];
+                                          StaticData.promoCodes = [];
                                           List data = snapshot.data.docs;
                                           data.forEach((element) {
-                                            StaticData.posters.add(
-                                                Poster.fromJson(
-                                                    element.data()));
+                                            PromoCode promoCode =
+                                                PromoCode.fromJson(
+                                                    element.data());
+                                            if (DateTime(
+                                                        DateTime.now().year,
+                                                        DateTime.now().month,
+                                                        DateTime.now().day)
+                                                    .difference(
+                                                        promoCode.expireOn)
+                                                    .inDays <=
+                                                0) {
+                                              StaticData.promoCodes
+                                                  .add(promoCode);
+                                              print(promoCode.toJson());
+                                            }
                                           });
-                                          pushNextScreen();
                                         }
-                                        return showLoading(snapshot);
+                                        return !snapshot.hasData
+                                            ? showLoading(snapshot)
+                                            : FutureBuilder(
+                                                future: FirebaseFirestore
+                                                    .instance
+                                                    .collection('admin')
+                                                    .doc('settings')
+                                                    .get(),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<dynamic>
+                                                        snapshot) {
+                                                  if (snapshot.hasData) {
+                                                    print(
+                                                        'shipping charge : ${snapshot.data.data()}');
+
+                                                    if (snapshot.data.data() !=
+                                                        null) {
+                                                      StaticData.shippingCharge = snapshot
+                                                              .data
+                                                              .data()[
+                                                          'shipping_charge'];
+                                                      pushNextScreen();
+                                                    }
+
+                                                  }
+                                                  return showLoading(snapshot);
+                                                },
+                                              );
                                       },
                                     );
                             },

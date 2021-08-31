@@ -507,23 +507,25 @@ class _ProductsState extends State<Products> {
         sortHighToLow();
         break;
       case "New Arrivals":
-        if (widget.title == "New Arrival") break;
-        filteredProducts.reversed;
+        // if (widget.title == "New Arrival") break;
+        // filteredProducts.reversed;
+      newArrivals();
         break;
       default:
         break;
     }
     setState(() {});
   }
+  newArrivals() {
+    filteredProducts.sort((Product a,Product b)=>b.productCreatedOn.compareTo(a.productCreatedOn));
+  }
 
   sortLowToHigh() {
-    print('low to high');
     filteredProducts.sort(
         (Product a, Product b) => a.productPrice.compareTo(b.productPrice));
   }
 
   sortHighToLow() {
-    print('high to low');
     filteredProducts.sort(
         (Product a, Product b) => b.productPrice.compareTo(a.productPrice));
   }
@@ -641,7 +643,7 @@ class _ProductsState extends State<Products> {
                                 builder: (context) => ItemDetails(
                                     filteredProducts[index],
                                     heroTag: filteredProducts[index].productId +
-                                        index.toString())));
+                                        index.toString()))).then((value) => setState((){}));
                       },
                       child: ProductCard(
                         filteredProducts[index],

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:nineteenfive_ecommerce_app/firebase/database/firebase_database.dart';
 import 'package:nineteenfive_ecommerce_app/models/order.dart';
 import 'package:nineteenfive_ecommerce_app/screens/order/order_details.dart';
 import 'package:nineteenfive_ecommerce_app/utils/data/static_data.dart';
@@ -240,7 +239,8 @@ class _YourOrdersState extends State<YourOrders> {
                     return StreamBuilder(
                       stream: FirebaseFirestore.instance
                           .collection('orders')
-                          .doc(StaticData.userData.orders![index])
+                          .doc(StaticData.userData.orders!.reversed
+                              .toList()[index])
                           .snapshots(),
                       builder: (context, AsyncSnapshot snapshot) {
                         late Order order;

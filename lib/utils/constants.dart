@@ -5,5 +5,6 @@ class Constants {
   static final onlyDateFormat = new DateFormat("dd-MMM-yyyy");
   static final  currencySymbol = '₹';
   static final onlyTimeFormat = new DateFormat("hh:mm a");
+  static const ADMIN_MAIL_ID = "admin@nineteenfive.com";
 
 }

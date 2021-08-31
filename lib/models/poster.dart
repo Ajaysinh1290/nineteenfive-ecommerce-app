@@ -2,6 +2,8 @@ class Poster {
   late String posterId;
   late String imageUrl;
   late String categoryId;
+  bool? isActive;
+
   //Top or bottom
   late String position;
   int? minAmount;
@@ -14,6 +16,7 @@ class Poster {
       required this.categoryId,
       required this.position,
       required this.posterId,
+      this.isActive,
       this.minAmount,
       this.maxAmount,
       this.maxOff,
@@ -28,6 +31,7 @@ class Poster {
     maxOff = data['max_off'];
     minOff = data['min_off'];
     posterId = data['poster_id'];
+    isActive = data['is_active'] ?? false;
   }
 
   Map<String, dynamic> toJson() {
@@ -39,7 +43,8 @@ class Poster {
       'min_amount': this.minAmount,
       'max_off': this.maxOff,
       'min_off': this.minOff,
-      'poster_id' : this.posterId
+      'poster_id': this.posterId,
+      'is_active': this.isActive
     };
   }
 }

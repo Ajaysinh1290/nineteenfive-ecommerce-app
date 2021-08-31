@@ -1,13 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/authentication/my_firebase_auth.dart';
-import 'package:nineteenfive_ecommerce_app/models/product.dart';
-import 'package:nineteenfive_ecommerce_app/utils/data/static_data.dart';
+import 'package:nineteenfive_ecommerce_app/firebase/notification/local_notification_service.dart';
 import 'package:nineteenfive_ecommerce_app/screens/home/load_data.dart';
-import 'package:nineteenfive_ecommerce_app/screens/home/main_screen.dart';
 import 'package:nineteenfive_ecommerce_app/screens/home/welcome_screen.dart';
-import 'package:nineteenfive_ecommerce_app/widgets/route/CustomPageRoute.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../authentication/signup_screen.dart';
@@ -22,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print("in logo");
+
     // pushNextScreen();
   }
 

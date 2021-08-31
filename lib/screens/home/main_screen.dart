@@ -1,16 +1,14 @@
-import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/authentication/my_firebase_auth.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/database/firebase_database.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/dynamic_link/dynamic_link_service.dart';
-import 'package:nineteenfive_ecommerce_app/models/user_data.dart';
+import 'package:nineteenfive_ecommerce_app/firebase/notification/local_notification_service.dart';
+import 'package:nineteenfive_ecommerce_app/firebase/notification/notification_service.dart';
 import 'package:nineteenfive_ecommerce_app/screens/home/home_screen.dart';
 import 'package:nineteenfive_ecommerce_app/screens/home/drawer_screen.dart';
-import 'package:nineteenfive_ecommerce_app/utils/color_palette.dart';
 
 import '../../utils/data/static_data.dart';
 
@@ -33,6 +31,8 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     child = HomeScreen(onDrawerClick: onDrawerClick);
     dynamicLinkService.handleDynamicLinks(context);
+    NotificationService.startService(context);
+
     // fetchUserData();
   }
 

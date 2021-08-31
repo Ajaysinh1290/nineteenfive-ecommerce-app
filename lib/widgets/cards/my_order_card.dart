@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nineteenfive_ecommerce_app/models/order.dart';
 import 'package:nineteenfive_ecommerce_app/models/product.dart';
-import 'package:nineteenfive_ecommerce_app/screens/order/order_details.dart';
 import 'package:nineteenfive_ecommerce_app/utils/data/static_data.dart';
 import 'package:nineteenfive_ecommerce_app/utils/constants.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/image/image_network.dart';
@@ -18,7 +17,7 @@ class MyOrderCard extends StatefulWidget {
 }
 
 class _MyOrderCardState extends State<MyOrderCard> {
-  late Product product;
+  Product? product;
 
   @override
   void initState() {
@@ -63,7 +62,7 @@ class _MyOrderCardState extends State<MyOrderCard> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: ImageNetwork(
-                      imageUrl: product.productImages.first,
+                      imageUrl: product!.productImages.first,
                       fit: BoxFit.cover,
                       width: ScreenUtil().setWidth(94),
                       height: ScreenUtil().setWidth(120),
@@ -78,7 +77,7 @@ class _MyOrderCardState extends State<MyOrderCard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(product.productName,
+                      Text(product!.productName,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context)
@@ -89,10 +88,8 @@ class _MyOrderCardState extends State<MyOrderCard> {
                         height: 5,
                       ),
                       Text(
-                        Constants.currencySymbol +
-                            (product.productPrice *
-                                    widget.order.numberOfItems)
-                                .toString(),
+                        Constants.currencySymbol + (widget.order.totalAmount + widget.order.shippingCharge! - (widget.order.promoCodeDiscount??0)).toString(),
+                            // (product!.productPrice * widget.order.numberOfItems)
                         style: GoogleFonts.openSans(
                             fontSize: 22.sp,
                             color: Colors.black,
@@ -104,7 +101,10 @@ class _MyOrderCardState extends State<MyOrderCard> {
                       ),
                       widget.order.productCancel != null
                           ? Text(
-                              "Order cancelled",
+                              "Order cancelled on " +
+                                  Constants.onlyDateFormat.format(widget.order
+                                          .productCancel!.cancellationTime ??
+                                      DateTime.now()),
                               style: Theme.of(context)
                                   .textTheme
                                   .headline6!
@@ -112,29 +112,30 @@ class _MyOrderCardState extends State<MyOrderCard> {
                             )
                           : widget.order.productReturn != null
                               ? Text(
-                                  widget.order.productReturn!.refundTime !=
-                                          null
+                                  widget.order.productReturn!.refundTime != null
                                       ? "Refunded on " +
-                                          Constants.onlyDateFormat.format(widget
-                                              .order.productReturn!.refundTime??DateTime.now())
+                                          Constants.onlyDateFormat.format(
+                                              widget.order.productReturn!.refundTime ??
+                                                  DateTime.now())
                                       : widget.order.productReturn!.productReceivedTime !=
                                               null
                                           ? "Product received back on " +
-                                              Constants.onlyDateFormat.format(
-                                                  widget.order.productReturn!
-                                                      .productReceivedTime??DateTime.now())
-                                          : widget.order.productReturn!
-                                                      .productPickupTime !=
+                                              Constants.onlyDateFormat.format(widget
+                                                      .order
+                                                      .productReturn!
+                                                      .productReceivedTime ??
+                                                  DateTime.now())
+                                          : widget.order.productReturn!.productPickupTime !=
                                                   null
                                               ? "Product picked on " +
-                                                  Constants.onlyDateFormat
-                                                      .format(widget
+                                                  Constants.onlyDateFormat.format(widget
                                                           .order
                                                           .productReturn!
-                                                          .productReceivedTime??DateTime.now())
+                                                          .productReceivedTime ??
+                                                      DateTime.now())
                                               : "Requested for return on " +
                                                   Constants.onlyDateFormat
-                                                      .format(widget.order.productReturn!.returnRequestTime??DateTime.now()),
+                                                      .format(widget.order.productReturn!.returnRequestTime ?? DateTime.now()),
                                   style: Theme.of(context)
                                       .textTheme
                                       .headline6!
@@ -144,22 +145,25 @@ class _MyOrderCardState extends State<MyOrderCard> {
                                   widget.order.deliveryTime != null
                                       ? "Delivered on " +
                                           Constants.onlyDateFormat.format(
-                                              widget.order.deliveryTime??DateTime.now())
-                                      : widget.order.outForDeliveryTime !=
-                                              null
+                                              widget.order.deliveryTime ??
+                                                  DateTime.now())
+                                      : widget.order.outForDeliveryTime != null
                                           ? "Out for delivery on" +
                                               Constants.onlyDateFormat.format(
                                                   widget.order
-                                                      .outForDeliveryTime??DateTime.now())
+                                                          .outForDeliveryTime ??
+                                                      DateTime.now())
                                           : widget.order.shippingTime != null
                                               ? "Shipped on " +
                                                   Constants.onlyDateFormat
-                                                      .format(widget
-                                                          .order.shippingTime??DateTime.now())
+                                                      .format(widget.order
+                                                              .shippingTime ??
+                                                          DateTime.now())
                                               : "Ordered on " +
                                                   Constants.onlyDateFormat
-                                                      .format(widget
-                                                          .order.orderTime??DateTime.now()),
+                                                      .format(widget.order
+                                                              .orderTime ??
+                                                          DateTime.now()),
                                   style: Theme.of(context)
                                       .textTheme
                                       .headline6!

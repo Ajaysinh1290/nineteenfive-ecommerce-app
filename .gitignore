@@ -47,3 +47,4 @@ app.*.map.json
 
 /lib/screens/payment_screen_demo.dart
 /lib/screens/payment/api_key.dart
+serviceAccountKey.json

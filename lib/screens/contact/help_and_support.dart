@@ -2,13 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nineteenfive_ecommerce_app/utils/color_palette.dart';
-import 'package:nineteenfive_ecommerce_app/widgets/button/long_blue_button.dart';
+import 'package:nineteenfive_ecommerce_app/utils/constants.dart';
+import 'package:nineteenfive_ecommerce_app/widgets/dialog/my_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'chat/chat_screen.dart';
-import 'email_us.dart';
 
 class HelpAndSupport extends StatefulWidget {
-  Function onDrawerClick;
+  final Function onDrawerClick;
 
   HelpAndSupport({required this.onDrawerClick});
 
@@ -17,6 +18,16 @@ class HelpAndSupport extends StatefulWidget {
 }
 
 class _HelpAndSupportState extends State<HelpAndSupport> {
+
+  sendMail() async {
+    const url = 'mailto:${Constants.ADMIN_MAIL_ID}';
+    print(url);
+    if (await canLaunch(url)) {
+    await launch(url);
+    } else {
+      MyDialog.showMyDialog(context, "Could not launch mail id..!");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,8 +122,9 @@ class _HelpAndSupportState extends State<HelpAndSupport> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => EmailUs()));
+                        sendMail();
+                        // Navigator.push(context,
+                        //     MaterialPageRoute(builder: (context) => EmailUs()));
                       },
                       child: Container(
                         width: double.infinity,

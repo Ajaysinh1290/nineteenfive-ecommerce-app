@@ -44,7 +44,7 @@ class _OrderDetailsState extends State<OrderDetails> {
     //     return;
     //   }
     // });
-    if(widget.order.productReturn!=null) {
+    if (widget.order.productReturn != null) {
       address = widget.order.productReturn!.pickUpAddress!;
     } else {
       address = widget.order.address!;
@@ -52,13 +52,20 @@ class _OrderDetailsState extends State<OrderDetails> {
   }
 
   canReturnable() {
-    if (product.returnTime == null || widget.order.deliveryTime == null) {
+    if (widget.order.returnTime == null || widget.order.deliveryTime == null) {
       return false;
     }
     int timeDuration = int.parse(
-        product.returnTime!.substring(0, product.returnTime!.indexOf(" ")));
+        widget.order.returnTime!.substring(0, widget.order.returnTime!.indexOf(" ")));
     String timeLabel =
-        product.returnTime!.substring(product.returnTime!.indexOf(" "));
+    widget.order.returnTime!.substring(widget.order.returnTime!.indexOf(" "));
+    // if (product.returnTime == null || widget.order.deliveryTime == null) {
+    //   return false;
+    // }
+    // int timeDuration = int.parse(
+    //     product.returnTime!.substring(0, product.returnTime!.indexOf(" ")));
+    // String timeLabel =
+    //     product.returnTime!.substring(product.returnTime!.indexOf(" "));
 
     if (timeLabel.contains("Day")) {
       int diffInDays = DateTime.now()
@@ -72,6 +79,7 @@ class _OrderDetailsState extends State<OrderDetails> {
       LocalDate todayDate = LocalDate.dateTime(DateTime.now());
       int diffInMonths = todayDate.periodSince(deliveryDate).months +
           todayDate.periodSince(deliveryDate).years * 12;
+
       return diffInMonths < timeDuration;
     } else if (timeLabel.contains("Year")) {
       LocalDate deliveryDate =
@@ -216,7 +224,7 @@ class _OrderDetailsState extends State<OrderDetails> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Order total',
+                  Text('Sub total',
                       style: Theme.of(context).textTheme.headline3),
                   SizedBox(
                     width: ScreenUtil().setWidth(20),
@@ -234,6 +242,139 @@ class _OrderDetailsState extends State<OrderDetails> {
                   )
                 ],
               ),
+              SizedBox(
+                height: 15,
+              ),
+              Container(
+                height: 1.5,
+                color: ColorPalette.lightGrey,
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Shipping',
+                      style: Theme.of(context).textTheme.headline3),
+                  SizedBox(
+                    width: ScreenUtil().setWidth(20),
+                  ),
+                  Flexible(
+                    child: Text(
+                      Constants.currencySymbol +
+                          widget.order.shippingCharge.toString(),
+                      style: GoogleFonts.openSans(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w600,
+                          color: ColorPalette.darkGrey,
+                          letterSpacing: 1),
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Container(
+                height: 1.5,
+                color: ColorPalette.lightGrey,
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Total',
+                      style: Theme.of(context).textTheme.headline3),
+                  SizedBox(
+                    width: ScreenUtil().setWidth(20),
+                  ),
+                  Flexible(
+                    child: Text(
+                      Constants.currencySymbol +
+                          (widget.order.totalAmount+widget.order.shippingCharge!).toString(),
+                      style: GoogleFonts.openSans(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w600,
+                          color: ColorPalette.darkGrey,
+                          letterSpacing: 1),
+                    ),
+                  )
+                ],
+              ),
+              if (widget.order.promoCodeDiscount != null)
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Container(
+                      height: 1.5,
+                      color: ColorPalette.lightGrey,
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Promo code discount',
+                            style: Theme.of(context).textTheme.headline3),
+                        SizedBox(
+                          width: ScreenUtil().setWidth(20),
+                        ),
+                        Flexible(
+                          child: Text(
+                            "-" +
+                                Constants.currencySymbol +
+                                widget.order.promoCodeDiscount.toString(),
+                            style: GoogleFonts.openSans(
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w600,
+                                color: ColorPalette.darkGrey,
+                                letterSpacing: 1),
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Container(
+                      height: 1.5,
+                      color: ColorPalette.lightGrey,
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Grand total',
+                            style: Theme.of(context).textTheme.headline3),
+                        SizedBox(
+                          width: ScreenUtil().setWidth(20),
+                        ),
+                        Flexible(
+                          child: Text(
+                            Constants.currencySymbol +
+                                (widget.order.totalAmount +
+                                        widget.order.shippingCharge! -
+                                        widget.order.promoCodeDiscount!)
+                                    .toString(),
+                            style: GoogleFonts.openSans(
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w600,
+                                color: ColorPalette.darkGrey,
+                                letterSpacing: 1),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               SizedBox(
                 height: 15,
               ),

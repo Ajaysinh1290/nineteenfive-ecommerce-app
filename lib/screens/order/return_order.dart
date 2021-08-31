@@ -152,7 +152,10 @@ class _ReturnOrderState extends State<ReturnOrder> {
                 Expanded(
                   child: Container(
                     height: double.infinity,
-                    color: ColorPalette.lightGrey,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(ScreenUtil().radius(15)),
+                      color: ColorPalette.lightGrey,
+                    ),
                     child: BasicTextField(
                       expanded: true,
                       controller: cancelReasonController,

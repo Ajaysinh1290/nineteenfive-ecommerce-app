@@ -1,24 +1,27 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/database/firebase_database.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/dynamic_link/dynamic_link_service.dart';
 import 'package:nineteenfive_ecommerce_app/models/cart.dart';
 import 'package:nineteenfive_ecommerce_app/models/product.dart';
-import 'package:nineteenfive_ecommerce_app/screens/admin/add_product.dart';
+import 'package:nineteenfive_ecommerce_app/models/product_rating.dart';
 import 'package:nineteenfive_ecommerce_app/utils/color_palette.dart';
 import 'package:nineteenfive_ecommerce_app/utils/constants.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/button/long_blue_button.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/cards/size_card.dart';
+import 'package:nineteenfive_ecommerce_app/widgets/dialog/my_dialog.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/image/image_network.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../utils/data/static_data.dart';
-import 'checkout.dart';
+import '../order/checkout.dart';
 
 class ItemDetails extends StatefulWidget {
   final Product product;
@@ -83,6 +86,123 @@ class _ItemDetailsState extends State<ItemDetails> {
           .createProductDynamicLink(widget.product.productId);
     }
     Share.share(uri.toString());
+  }
+
+  addRating() {
+    double rating = 0;
+    for (int i = 0; i < widget.product.productRatings!.length; i++) {
+      if (widget.product.productRatings![i].userId ==
+          StaticData.userData.userId) {
+        rating = widget.product.productRatings![i].rating;
+      }
+    }
+    showDialog(
+        context: context,
+        barrierColor: ColorPalette.black.withOpacity(0.2),
+        builder: (context) {
+          return AlertDialog(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ClipOval(
+                  child: ImageNetwork(
+                    imageUrl: widget.product.productImages.first,
+                    width: ScreenUtil().setWidth(80),
+                    height: ScreenUtil().setWidth(80),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Text(
+                  "Rate This Product",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline5!
+                      .copyWith(color: Colors.black),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  'Tap a star to give your rating.',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+              ],
+            ),
+            content: StatefulBuilder(builder: (context, setState) {
+              return Container(
+                  height: 40,
+                  alignment: Alignment.center,
+                  child: RatingBar.builder(
+                      itemBuilder: (context, _) => Icon(
+                            Icons.star,
+                            color: ColorPalette.yellow,
+                          ),
+                      allowHalfRating: true,
+                      direction: Axis.horizontal,
+                      glowColor: ColorPalette.yellow.withOpacity(0.1),
+
+                      itemCount: 5,
+                      itemSize: 35.sp,
+                      initialRating: rating,
+                      itemPadding: EdgeInsets.symmetric(horizontal: 8.sp,),
+                      minRating: 1,
+                      onRatingUpdate: (newRating){
+                        setState.call((){rating = newRating;});
+                      }));
+            }),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Cancel',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6!
+                      .copyWith(color: Colors.black),
+                ),
+              ),
+              RaisedButton(
+                color: Theme.of(context).buttonColor,
+                onPressed: () => submitRating(rating),
+                child: Text(
+                  'Submit',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6!
+                      .copyWith(color: Colors.black),
+                ),
+              )
+            ],
+          );
+        });
+  }
+
+  submitRating(double rating) async {
+    MyDialog.showLoading(context);
+    bool contains = false;
+    widget.product.productRatings!.forEach((element) {
+      if (element.userId == StaticData.userData.userId) {
+        element.rating = rating;
+        contains = true;
+      }
+    });
+    if (!contains) {
+      widget.product.productRatings!.add(ProductRating(
+          userId: StaticData.userData.userId,
+          rating: rating,
+          ratingTime: DateTime.now()));
+    }
+
+    await FirebaseDatabase.storeProduct(widget.product);
+    Navigator.pop(context);
+    Navigator.pop(context);
+    setState(() {});
   }
 
   @override
@@ -219,6 +339,26 @@ class _ItemDetailsState extends State<ItemDetails> {
                         ),
                       ),
                     Positioned(
+                      bottom: 60,
+                      right: 40,
+                      child: InkWell(
+                        onTap: () {
+                          addRating();
+                        },
+                        child: Container(
+                            width: ScreenUtil().setWidth(40),
+                            height: ScreenUtil().setWidth(40),
+                            decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.5),
+                                shape: BoxShape.circle),
+                            child: Icon(
+                              Icons.star_border,
+                              size: 24.sp,
+                              color: Colors.black,
+                            )),
+                      ),
+                    ),
+                    Positioned(
                       bottom: 10,
                       right: 40,
                       child: InkWell(
@@ -238,7 +378,6 @@ class _ItemDetailsState extends State<ItemDetails> {
                             )),
                       ),
                     ),
-
                   ],
                 ),
               ),

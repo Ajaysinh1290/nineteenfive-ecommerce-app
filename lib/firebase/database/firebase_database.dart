@@ -71,6 +71,15 @@ class FirebaseDatabase {
         .doc(category!.categoryId)
         .set(category.toJson());
   }
+  static Future<Order> fetchOrder(String orderId) async {
+    late Order order;
+    await FirebaseFirestore.instance
+        .collection('orders')
+        .doc(orderId).get().then((value) {
+       order = Order.fromJson(value.data());
+    });
+    return order;
+  }
 
   static Future<void> storePoster(Poster? poster) async {
     await FirebaseFirestore.instance

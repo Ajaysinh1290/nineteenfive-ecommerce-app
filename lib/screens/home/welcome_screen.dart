@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/authentication/my_firebase_auth.dart';
 import 'package:nineteenfive_ecommerce_app/screens/home/load_data.dart';
-import 'package:nineteenfive_ecommerce_app/utils/color_palette.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/button/long_blue_button.dart';
-import 'package:nineteenfive_ecommerce_app/widgets/transforms/transforms.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:transformer_page_view/transformer_page_view.dart';
 
 import '../authentication/signup_screen.dart';
 

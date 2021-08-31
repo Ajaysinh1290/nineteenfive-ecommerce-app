@@ -4,11 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nineteenfive_ecommerce_app/models/chat_data.dart';
-import 'package:nineteenfive_ecommerce_app/models/user_data.dart';
 import 'package:nineteenfive_ecommerce_app/utils/color_palette.dart';
-import 'package:nineteenfive_ecommerce_app/utils/constants.dart';
 import 'package:nineteenfive_ecommerce_app/utils/data/static_data.dart';
-import 'package:nineteenfive_ecommerce_app/widgets/image/image_network.dart';
 
 import 'chat_bubbles.dart';
 
@@ -44,7 +41,6 @@ class _ChatScreenState extends State<ChatScreen> {
           .collection('chat')
           .doc(chatData.chatId)
           .set(chatData.toJson());
-      setState(() {});
     }
     messageController.text = '';
   }

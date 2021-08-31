@@ -33,12 +33,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons:
   google_fonts:
-  pin_code_fields:
-  intl:
   firebase_core: ^1.0.3
   firebase_auth: ^1.0.2
   cloud_firestore: ^1.0.3
-  flutter_spinkit:
   google_sign_in: ^5.0.3
   avatar_glow:
   image_picker:
@@ -46,19 +43,20 @@ dependencies:
   flutter_screenutil:
   firebase_dynamic_links:
   share_plus:
-  flutter_stripe:
   http:
   cached_network_image:
   razorpay_flutter:
+  url_launcher:
   shared_preferences:
+  flutter_rating_bar: ^4.0.0
+  firebase_messaging:
+  flutter_local_notifications: ^8.1.1+1
+  flutter_html:
   time_machine:
     git:
       url: https://github.com/Dana-Ferguson/time_machine
       ref: master
-  transformer_page_view:
-    git:
-      url: https://github.com/best-flutter/transformer_page_view.git
-      ref: master
+
 
 
 

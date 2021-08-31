@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/database/firebase_database.dart';
+import 'package:nineteenfive_ecommerce_app/models/address.dart';
 import 'package:nineteenfive_ecommerce_app/models/order.dart';
 import 'package:nineteenfive_ecommerce_app/screens/address/address_screen.dart';
 import 'package:nineteenfive_ecommerce_app/screens/payment/bank_details_screen.dart';
 import 'package:nineteenfive_ecommerce_app/screens/payment/razorpay_payment_screen.dart';
+import 'package:nineteenfive_ecommerce_app/utils/color_palette.dart';
 import 'package:nineteenfive_ecommerce_app/utils/data/static_data.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/button/long_blue_button.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/cards/address_card.dart';
@@ -52,9 +54,65 @@ class _YourAddressesState extends State<YourAddresses> {
     });
   }
 
+  confirmDelete(BuildContext context,int index) {
+    showDialog(
+        context: context,
+        barrierColor: ColorPalette.black.withOpacity(0.2),
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              "Are you sure you want to delete ?",
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .copyWith(color: Colors.black),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  setState(() {
+                    
+                  });
+                },
+                child: Text(
+                  'Cancel',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6!
+                      .copyWith(color: Colors.black),
+                ),
+              ),
+              RaisedButton(
+                color: Theme.of(context).buttonColor,
+                onPressed: () {
+                  deleteAddress(index);
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Delete',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6!
+                      .copyWith(color: Colors.black),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  deleteAddress(int index) async {
+    StaticData.userData.addresses!.removeAt(index);
+    if (selectedAddress != 0) {
+      selectedAddress--;
+    }
+    await FirebaseDatabase.storeUserData(StaticData.userData);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Color(0xfff3f3f3),
       appBar: AppBar(
@@ -180,28 +238,15 @@ class _YourAddressesState extends State<YourAddresses> {
                             }
                           : null,
                       child: Dismissible(
-                        key: Key(StaticData.userData.addresses![index].addressId),
-                        onDismissed: (direction) async {
-                          StaticData.userData.addresses!.removeAt(index);
-                          await FirebaseDatabase.storeUserData(
-                              StaticData.userData);
-                          if (selectedAddress != 0) {
-                            selectedAddress--;
-                          }
-                          setState(() {});
-                        },
+                        key: Key(DateTime.now()
+                                .millisecondsSinceEpoch
+                                .toString() +
+                            StaticData.userData.addresses![index].addressId),
+                        onDismissed: (_)=>confirmDelete(context, index),
                         child: AddressCard(
                           StaticData.userData.addresses![index],
                           index == selectedAddress,
-                          onDeleted: () async {
-                            StaticData.userData.addresses!.removeAt(index);
-                            if (selectedAddress != 0) {
-                              selectedAddress--;
-                            }
-                            await FirebaseDatabase.storeUserData(
-                                StaticData.userData);
-                            setState(() {});
-                          },
+                          onDeleted: ()=>confirmDelete(context, index),
                         ),
                       ));
                 },
@@ -210,7 +255,7 @@ class _YourAddressesState extends State<YourAddresses> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: (widget.orders != null ||
                   widget.productReturn != null && widget.order != null) &&
-          StaticData.userData.addresses!.isNotEmpty
+              StaticData.userData.addresses!.isNotEmpty
           ? Padding(
               padding: const EdgeInsets.all(20.0),
               child: LongBlueButton(
@@ -218,7 +263,8 @@ class _YourAddressesState extends State<YourAddresses> {
                 onPressed: () {
                   if (widget.orders != null) {
                     widget.orders!.forEach((element) {
-                      element.address = StaticData.userData.addresses![selectedAddress];
+                      element.address =
+                          StaticData.userData.addresses![selectedAddress];
                     });
                     // Navigator.push(
                     //     context,
@@ -228,9 +274,14 @@ class _YourAddressesState extends State<YourAddresses> {
                     //         alignment: Alignment.center,
                     //         curve: Curves.elasticOut,
                     //         duration: Duration(seconds: 1)));
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>RazorPayPaymentScreen(widget.orders!,widget.isFromCart)));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RazorPayPaymentScreen(
+                                widget.orders!, widget.isFromCart)));
                   } else {
-                    widget.productReturn!.pickUpAddress= StaticData.userData.addresses![selectedAddress];
+                    widget.productReturn!.pickUpAddress =
+                        StaticData.userData.addresses![selectedAddress];
                     Navigator.push(
                         context,
                         MaterialPageRoute(

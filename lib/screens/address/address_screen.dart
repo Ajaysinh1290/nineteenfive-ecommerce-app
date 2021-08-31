@@ -2,13 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/database/firebase_database.dart';
 import 'package:nineteenfive_ecommerce_app/models/address.dart';
-import 'package:nineteenfive_ecommerce_app/models/order.dart';
-import 'package:nineteenfive_ecommerce_app/screens/payment/bank_details_screen.dart';
-import 'package:nineteenfive_ecommerce_app/screens/payment/payment_successfull.dart';
 import 'package:nineteenfive_ecommerce_app/utils/data/static_data.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/button/long_blue_button.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/dialog/my_dialog.dart';
-import 'package:nineteenfive_ecommerce_app/widgets/route/CustomPageRoute.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/text%20field/basic_text_field.dart';
 
 class AddressScreen extends StatefulWidget {

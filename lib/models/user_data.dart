@@ -1,6 +1,5 @@
 import 'package:nineteenfive_ecommerce_app/models/address.dart';
 import 'package:nineteenfive_ecommerce_app/models/cart.dart';
-import 'package:nineteenfive_ecommerce_app/models/search_history.dart';
 
 class UserData {
   late String userId;
@@ -12,7 +11,7 @@ class UserData {
   List<Cart>? cart = [];
   List<dynamic>? orders = [];
   List<dynamic>? likedProducts = [];
-  List<dynamic>? searchHistory = [];
+  List<dynamic>? promoCodesUsed = [];
 
   UserData(
       {required this.userId,
@@ -24,7 +23,7 @@ class UserData {
       this.cart,
       this.orders,
       this.likedProducts,
-      this.searchHistory});
+      this.promoCodesUsed});
 
   UserData.fromJson(Map<String, dynamic> data) {
     this.userId = data['user_id'];
@@ -42,10 +41,7 @@ class UserData {
     });
     this.orders = data['orders'];
     this.likedProducts = data['liked_products'];
-    List<dynamic> searchHistoryList = data['search_history'];
-    searchHistoryList.forEach((query) {
-      searchHistory!.add(SearchHistory.fromJson(query));
-    });
+    this.promoCodesUsed = data['promo_code_used'];
   }
 
   Map<String, dynamic> toJson() {
@@ -64,14 +60,6 @@ class UserData {
       });
     }
 
-    List<Map<String, dynamic>> searchHistoryList = [];
-
-    if (searchHistory != null) {
-      searchHistory!.forEach((query) {
-        searchHistoryList.add(query.toJson());
-      });
-    }
-
     return {
       'user_id': this.userId,
       'email': this.email,
@@ -82,7 +70,7 @@ class UserData {
       'cart': cartList,
       'orders': this.orders,
       'liked_products': this.likedProducts,
-      'search_history': searchHistoryList
+      'promo_code_used': this.promoCodesUsed
     };
   }
 }

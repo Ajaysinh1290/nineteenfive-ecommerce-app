@@ -4,9 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/authentication/my_firebase_auth.dart';
 import 'package:nineteenfive_ecommerce_app/models/product.dart';
+import 'package:nineteenfive_ecommerce_app/screens/about/about_screen.dart';
 import 'package:nineteenfive_ecommerce_app/screens/authentication/login_screen.dart';
 import 'package:nineteenfive_ecommerce_app/screens/contact/help_and_support.dart';
 import 'package:nineteenfive_ecommerce_app/screens/home/home_screen.dart';
+import 'package:nineteenfive_ecommerce_app/screens/privacy_policy/privacy_policy.dart';
 import 'package:nineteenfive_ecommerce_app/screens/product/products.dart';
 import 'package:nineteenfive_ecommerce_app/screens/address/your_addresses.dart';
 import 'package:nineteenfive_ecommerce_app/screens/order/your_orders.dart';
@@ -171,12 +173,6 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       widget.onChanged.call(YourProfile(
                         onDrawerClick: widget.onDrawerClick,
                       ));
-                      // Navigator.push(
-                      //       context,
-                      //       MaterialPageRoute(
-                      //           builder: (context) => YourProfile())).then((value) {
-                      //     setState(() {});
-                      //   });
                     },
                     child:
                         getListTile(CupertinoIcons.person, 'Your Profile', 1)),
@@ -186,16 +182,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       widget.onChanged.call(YourOrders(
                         onDrawerClick: widget.onDrawerClick,
                       ));
-                      // Navigator.push(context,
-                      //     MaterialPageRoute(builder: (context) => YourOrders()));
                     },
                     child: getListTile(Icons.card_travel, 'Your Orders', 2)),
                 GestureDetector(
                     onTap: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => LikedProducts()));
                       List<Product> products = [];
                       StaticData.userData.likedProducts!
                           .forEach((likedProduct) {
@@ -216,10 +206,6 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         getListTile(CupertinoIcons.heart, 'Liked Products', 3)),
                 GestureDetector(
                     onTap: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => HelpAndSupport()));
                       selectedIndex = 4;
                       widget.onChanged.call(HelpAndSupport(
                         onDrawerClick: widget.onDrawerClick,
@@ -228,10 +214,6 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     child: getListTile(Icons.headset, 'Help & Support', 4)),
                 GestureDetector(
                     onTap: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => YourAddresses()));
                       selectedIndex = 5;
                       widget.onChanged.call(YourAddresses(
                         onDrawerClick: widget.onDrawerClick,
@@ -239,8 +221,25 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     },
                     child: getListTile(
                         Icons.location_on_outlined, "Your Addresses", 5)),
-                getListTile(Icons.bookmark_border, 'Privacy Policy', 6),
-                getListTile(Icons.info_outline, 'About', 7),
+
+                GestureDetector(
+                  onTap: () {
+                    selectedIndex = 6;
+                    widget.onChanged.call(PrivacyPolicyScreen(
+                      onDrawerClick: widget.onDrawerClick,
+                    ));
+                  },
+                  child:  getListTile(Icons.bookmark_border, 'Privacy Policy', 6),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    selectedIndex = 7;
+                    widget.onChanged.call(AboutScreen(
+                      onDrawerClick: widget.onDrawerClick,
+                    ));
+                  },
+                  child: getListTile(Icons.info_outline, 'About', 7),
+                ),
                 GestureDetector(
                     onTap: () {
                       GoogleSignIn().disconnect();

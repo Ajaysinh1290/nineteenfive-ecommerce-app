@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nineteenfive_ecommerce_app/firebase/authentication/my_firebase_auth.dart';
-import 'package:nineteenfive_ecommerce_app/screens/authentication/forgot_password_screen.dart';
-import 'package:nineteenfive_ecommerce_app/screens/authentication/signup_screen.dart';
 import 'package:nineteenfive_ecommerce_app/utils/data/static_data.dart';
-import 'package:nineteenfive_ecommerce_app/screens/home/load_data.dart';
-import 'package:nineteenfive_ecommerce_app/utils/color_palette.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/button/long_blue_button.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/dialog/my_dialog.dart';
-import 'package:nineteenfive_ecommerce_app/widgets/route/CustomPageRoute.dart';
 import 'package:nineteenfive_ecommerce_app/widgets/text%20field/basic_text_field.dart';
 
 class EditEmail extends StatefulWidget {

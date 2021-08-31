@@ -1,4 +1,5 @@
 import 'package:nineteenfive_ecommerce_app/models/address.dart';
+import 'package:nineteenfive_ecommerce_app/utils/data/static_data.dart';
 
 class Order {
   late String orderId;
@@ -15,6 +16,10 @@ class Order {
   DateTime? deliveryTime;
   ProductCancel? productCancel;
   ProductReturn? productReturn;
+  String? returnTime;
+  int? shippingCharge;
+  int? promoCodeDiscount;
+  String? promoCode;
 
   Order(
       {required this.orderId,
@@ -30,7 +35,11 @@ class Order {
       this.productReturn,
       this.outForDeliveryTime,
       this.productCancel,
-      this.deliveryTime});
+      this.deliveryTime,
+      this.promoCodeDiscount,
+      this.returnTime,
+      this.promoCode,
+      this.shippingCharge});
 
   Order.fromJson(Map<String, dynamic>? data) {
     this.orderId = data!['order_id'];
@@ -39,7 +48,8 @@ class Order {
     this.productId = data['product_id'];
     this.numberOfItems = data['number_of_items'];
     this.productSize = data['product_size'];
-    this.address = data['address']==null?null:Address.fromJson(data['address']);
+    this.address =
+        data['address'] == null ? null : Address.fromJson(data['address']);
     this.userId = data['user_id'];
     this.transactionId = data['transaction_id'];
     this.outForDeliveryTime = data['out_for_delivery_time']?.toDate();
@@ -51,6 +61,10 @@ class Order {
     this.productReturn = data['product_return'] == null
         ? null
         : ProductReturn.fromJson(data['product_return']);
+    this.returnTime = data['return_time'];
+    this.shippingCharge = data['shipping_charge'] ?? 40;
+    this.promoCodeDiscount = data['promo_code_discount'];
+    this.promoCode = data['promo_code'];
   }
 
   Map<String, dynamic> toJson() {
@@ -68,7 +82,11 @@ class Order {
       'out_for_delivery_time': this.outForDeliveryTime,
       'delivery_time': this.shippingTime,
       'product_cancel': this.productCancel?.toJson(),
-      'product_return': this.productReturn?.toJson()
+      'product_return': this.productReturn?.toJson(),
+      'return_time': this.returnTime,
+      "shipping_charge": this.shippingCharge,
+      "promo_code_discount": this.promoCodeDiscount,
+      'promo_code': this.promoCode
     };
   }
 }
@@ -102,7 +120,9 @@ class ProductReturn {
     this.bankDetails = data['bank_details'] == null
         ? null
         : BankDetails.fromJson(data['bank_details']);
-    this.pickUpAddress = data['pick_up_address']==null?null:Address.fromJson(data["pick_up_address"]);
+    this.pickUpAddress = data['pick_up_address'] == null
+        ? null
+        : Address.fromJson(data["pick_up_address"]);
     this.numberOfItems = data['number_of_items'];
   }
 
@@ -156,7 +176,10 @@ class BankDetails {
   late String ifscCode;
   late String accountHolderName;
 
-  BankDetails({required this.accountNumber, required this.ifscCode, required this.accountHolderName});
+  BankDetails(
+      {required this.accountNumber,
+      required this.ifscCode,
+      required this.accountHolderName});
 
   BankDetails.fromJson(Map<String, dynamic> data) {
     accountNumber = data['account_number'];

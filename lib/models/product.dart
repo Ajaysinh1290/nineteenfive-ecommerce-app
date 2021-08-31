@@ -15,6 +15,7 @@ class Product {
   late bool isActive;
   late bool isFeatured;
   String? returnTime;
+  int? shippingCharge;
 
   Product(
       {required this.productId,
@@ -30,6 +31,7 @@ class Product {
         required this.productDescription,
         this.returnTime,
         required this.isActive,
+        this.shippingCharge,
         required this.isFeatured});
 
   Product.fromJson(Map<String, dynamic>? data) {
@@ -51,6 +53,7 @@ class Product {
     });
 
     this.returnTime = data['return_time'];
+    this.shippingCharge = data['shipping_charge'];
   }
 
   Map<String, dynamic> toJson() {
@@ -72,7 +75,8 @@ class Product {
       'available_stock': this.availableStock,
       'return_time': this.returnTime,
       'is_active': this.isActive,
-      'is_featured': this.isFeatured
+      'is_featured': this.isFeatured,
+      'shipping_charge' : this.shippingCharge
     };
   }
 }

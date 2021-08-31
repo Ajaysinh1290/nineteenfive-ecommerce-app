@@ -94,7 +94,7 @@ class _TrackOrderState extends State<TrackOrder> {
             trackHeight[i] = trackMaxHeight;
           });
         }),
-        onCancel: () => {debugPrint('onCancel')},
+        onCancel: () => {},
       ));
     }
   }
@@ -143,7 +143,7 @@ class _TrackOrderState extends State<TrackOrder> {
                     Column(
                       children: [
                         SizedBox(
-                          height: ScreenUtil().setHeight(7),
+                          height: ScreenUtil().setHeight(5),
                         ),
                         getContainer(widget.order.orderTime != null),
                         getTrack(widget.order.orderTime != null, 0),
@@ -157,7 +157,7 @@ class _TrackOrderState extends State<TrackOrder> {
                             trackHeight[3] != 0),
                         if (widget.order.productReturn != null)
                           Container(
-                            height: 390,
+                            height: ScreenUtil().setHeight(425),
                             child: Column(
                               children: [
                                 getTrack(widget.order.deliveryTime != null, 3),
@@ -196,7 +196,7 @@ class _TrackOrderState extends State<TrackOrder> {
                             ),
                           ),
                         SizedBox(
-                          height: ScreenUtil().setHeight(5),
+                          height: ScreenUtil().setHeight(12),
                         ),
                       ],
                     ),
