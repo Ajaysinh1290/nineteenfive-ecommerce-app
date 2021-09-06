@@ -6,6 +6,8 @@
     <img src="screenshots/image3.jpeg" width="18%">
     <img src="screenshots/image4.jpeg" width="18%">
     <img src="screenshots/image5.jpeg" width="18%">
+ 
+
 </div>
 
 <h3 style="font-size: 18px; letter-spacing: 1.2px">ABOUT US</h3>
@@ -30,3 +32,5 @@ Nineteenfive is India’s ultimate shopping destination for clothes. Forget visi
     <li>Direct chat with seller</li>
     <li>Product rating</li>
 </ol>
+
+<img src="screenshots/all_screenshots.png" width="92.5%">
