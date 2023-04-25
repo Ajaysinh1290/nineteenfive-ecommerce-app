@@ -1,5 +1,4 @@
 # Nineteenfive
-Admin Panel : https://github.com/Ajaysinh1290/nineteenfive-admin-panel
 
 <h3 style="font-size: 18px; letter-spacing: 1.2px">SCREEN SHOTS</h3>
 <div>
@@ -35,4 +34,9 @@ Nineteenfive is India’s ultimate shopping destination for clothes. Forget visi
     <li>Product rating</li>
 </ol>
 
+
 <img src="screenshots/all_screenshots.png" width="92.5%">
+
+<h3 style="font-size: 18px; letter-spacing: 1.2px">Admin Panel</h3>
+https://github.com/Ajaysinh1290/nineteenfive-admin-panel
+ 
